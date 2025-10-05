@@ -89,8 +89,8 @@ export default function SearchBox({ searchTerm, onSearchChange, contributions }:
   };
 
   return (
-    <div className="relative">
-      <div className="relative">
+    <div className="relative dark:bg-gray-900 dark:text-gray-100">
+      <div className="relative dark:border-gray-700 dark:bg-gray-800">
         <input
           ref={searchRef}
           type="text"
@@ -100,11 +100,11 @@ export default function SearchBox({ searchTerm, onSearchChange, contributions }:
           onChange={(e) => onSearchChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => searchTerm.length > 0 && suggestions.length > 0 && setShowSuggestions(true)}
-          className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+          className="w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400"
         />
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
           <svg
-            className="w-4 h-4 text-gray-400"
+            className="w-4 h-4 text-gray-400 dark:text-gray-200"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -121,13 +121,13 @@ export default function SearchBox({ searchTerm, onSearchChange, contributions }:
 
       {/* Search Suggestions */}
       {showSuggestions && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg max-h-60 overflow-y-auto dark:bg-gray-900 dark:text-gray-100">
           <div className="py-1">
             {suggestions.map((suggestion, index) => (
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="w-full px-3 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                className="w-full px-3 py-2 text-left hover:bg-gray-700 focus:bg-gray-700 focus:outline-none dark:hover:bg-gray-800 dark:focus:bg-gray-800"
               >
                 <div className="flex items-center">
                   {suggestion.startsWith('tag:') && (
@@ -142,14 +142,14 @@ export default function SearchBox({ searchTerm, onSearchChange, contributions }:
                   <span className="text-sm">
                     {suggestion.startsWith('tag:') && (
                       <>
-                        <span className="text-gray-500">Tag:</span>{' '}
-                        <span className="font-medium text-gray-500">{suggestion.split(':')[1]}</span>
+                        <span className="text-gray-500 dark:text-gray-400">Tag:</span>{' '}
+                        <span className="font-medium text-gray-500 dark:text-gray-400">{suggestion.split(':')[1]}</span>
                       </>
                     )}
                     {suggestion.startsWith('author:') && (
                       <>
-                        <span className="text-gray-500">Author:</span>{' '}
-                        <span className="font-medium text-gray-500">@{suggestion.split(':')[1]}</span>
+                        <span className="text-gray-500 dark:text-gray-400">Author:</span>{' '}
+                        <span className="font-medium text-gray-500 dark:text-gray-400">@{suggestion.split(':')[1]}</span>
                       </>
                     )}
                     {!suggestion.startsWith('tag:') && !suggestion.startsWith('author:') && (
@@ -162,8 +162,8 @@ export default function SearchBox({ searchTerm, onSearchChange, contributions }:
           </div>
           
           {/* Quick search tips */}
-          <div className="border-t border-gray-100 px-3 py-2 bg-gray-50">
-            <div className="text-xs text-gray-500">
+          <div className="border-t border-gray-700 px-3 py-2 bg-gray-800 dark:bg-gray-900">
+            <div className="text-xs text-gray-400 dark:text-gray-200">
               💡 Pro tip: Try searching for specific tags like &ldquo;gradient&rdquo;, &ldquo;animation&rdquo;, or &ldquo;hover&rdquo;
             </div>
           </div>
@@ -173,13 +173,13 @@ export default function SearchBox({ searchTerm, onSearchChange, contributions }:
       {/* Popular tags */}
       {searchTerm === '' && (
         <div className="mt-2">
-          <div className="text-xs text-gray-500 mb-2">Popular tags:</div>
+          <div className="text-xs text-gray-400 dark:text-gray-200 mb-2">Popular tags:</div>
           <div className="flex flex-wrap gap-1">
             {allTags.slice(0, 8).map((tag) => (
               <button
                 key={tag}
                 onClick={() => onSearchChange(tag)}
-                className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
+                className="px-2 py-1 text-xs bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-100 rounded-full border border-gray-700 dark:border-gray-700 hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors"
               >
                 {tag}
               </button>
