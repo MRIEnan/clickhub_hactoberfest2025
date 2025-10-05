@@ -14,7 +14,7 @@ if (typeof window !== 'undefined') {
       const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
       
       if (loadTime > 0) {
-        console.info(`Page loaded in ${loadTime}ms`);
+        console.info(`Page loaded in  ${loadTime}ms`);
       }
     });
   }
