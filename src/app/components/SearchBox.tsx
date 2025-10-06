@@ -117,6 +117,7 @@ export default function SearchBox({ searchTerm, onSearchChange, contributions }:
           aria-controls={open ? listboxId : undefined}
           aria-activedescendant={activeOptionId}
           className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-black shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+          autoComplete="off"
         />
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
