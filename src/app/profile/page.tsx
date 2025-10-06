@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import ButtonShowcase from '../components/ButtonShowcase';
@@ -41,6 +41,7 @@ interface ButtonContribution {
 
 const ProfileContent = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const usernameParam = searchParams?.get('user');
   const { user, isLoggedIn } = useUser();
   
@@ -62,7 +63,12 @@ const ProfileContent = () => {
       
       // Fetch GitHub user data
       const userRes = await fetch(`https://api.github.com/users/${user}`);
-      if (!userRes.ok) throw new Error('User not found');
+      if (!userRes.ok) {
+        if (userRes.status === 403) {
+          throw new Error('Rate limit exceeded. Please try again in a minute or sign in to lower requests.');
+        }
+        throw new Error('User not found');
+      }
       const userData: GithubUser = await userRes.json();
       setUserData(userData);
 
@@ -135,7 +141,54 @@ const ProfileContent = () => {
           )}
         </div>
 
-        {userData && (
+        {/* Username Quick Search */}
+        <div className="mb-6">
+          <form
+            aria-label="Search GitHub username"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget as HTMLFormElement);
+              const uname = String(fd.get('username') || '').trim();
+              if (uname) {
+                router.push(`/profile?user=${encodeURIComponent(uname)}`);
+              }
+            }}
+            className="max-w-xl mx-auto flex items-stretch gap-2"
+          >
+            <input
+              name="username"
+              type="text"
+              defaultValue={usernameParam || ''}
+              placeholder="Enter GitHub username (e.g., octocat)"
+              className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              autoComplete="username"
+              aria-label="GitHub username"
+            />
+            <button
+              type="submit"
+              className="px-5 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+              aria-label="Search"
+            >
+              Search
+            </button>
+          </form>
+        </div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-8 mb-8 animate-pulse">
+            <div className="flex items-center gap-6">
+              <div className="w-32 h-32 rounded-full bg-gray-700" />
+              <div className="flex-1 space-y-3">
+                <div className="h-6 bg-gray-700 rounded w-1/3" />
+                <div className="h-4 bg-gray-700 rounded w-1/4" />
+                <div className="h-4 bg-gray-700 rounded w-2/3" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {userData && !loading && (
           <>
             {/* User Profile Section */}
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-8 border border-gray-700 mb-8">
@@ -255,6 +308,7 @@ const ProfileContent = () => {
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
                         className="px-3 py-2 rounded-md bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Previous page"
                       >
                         Previous
                       </button>
@@ -281,6 +335,8 @@ const ProfileContent = () => {
                                 ? 'bg-purple-600 text-white'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
+                            aria-current={currentPage === page ? 'page' : undefined}
+                            aria-label={`Go to page ${page}`}
                           >
                             {page}
                           </button>
@@ -291,6 +347,7 @@ const ProfileContent = () => {
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
                         className="px-3 py-2 rounded-md bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Next page"
                       >
                         Next
                       </button>

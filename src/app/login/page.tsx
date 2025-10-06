@@ -115,16 +115,47 @@ const LoginContent = () => {
               <label htmlFor="github-username" className="block text-sm font-medium text-gray-300 mb-2">
                 GitHub Username
               </label>
-              <input
-                id="github-username"
-                type="text"
-                placeholder="Enter your GitHub username"
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
-                autoFocus
-              />
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  {/* User icon */}
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M12 2a5 5 0 100 10 5 5 0 000-10zm-7 17a7 7 0 1114 0v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-1z" clipRule="evenodd" />
+                  </svg>
+                </span>
+                <input
+                  id="github-username"
+                  type="text"
+                  placeholder="Enter your GitHub username"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLoading}
+                  autoFocus
+                  autoComplete="username"
+                  aria-describedby="username-help"
+                />
+              </div>
+              <div id="username-help" className="mt-2 text-xs text-gray-400">
+                Only your public GitHub info is used. Example: <span className="text-gray-300">octocat</span>
+              </div>
+              <div className="mt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setUsername('octocat')}
+                  className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-md text-xs"
+                  aria-label="Fill demo username"
+                >
+                  Use demo username
+                </button>
+                <a
+                  href="https://github.com/signup"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-md text-xs"
+                >
+                  Create a GitHub account
+                </a>
+              </div>
             </div>
 
             {error && (
@@ -137,6 +168,7 @@ const LoginContent = () => {
               type="submit"
               className="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-800 text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center"
               disabled={isLoading || !username.trim()}
+              aria-busy={isLoading ? 'true' : 'false'}
             >
               {isLoading ? (
                 <>
@@ -147,9 +179,18 @@ const LoginContent = () => {
                   Verifying...
                 </>
               ) : (
-                'Sign In with GitHub'
+                <>
+                  {/* GitHub mark */}
+                  <svg className="mr-2 h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.2-.01-.86-.01-1.56-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 012 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.45.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z" />
+                  </svg>
+                  Sign In with GitHub
+                </>
               )}
             </button>
+            <p className="mt-3 text-[11px] text-gray-500 text-center">
+              We fetch public data from GitHub. You may hit GitHub rate limits occasionally; please try again in a minute.
+            </p>
           </form>
 
           {/* Info Section */}

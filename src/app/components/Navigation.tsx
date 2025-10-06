@@ -24,7 +24,7 @@ const NavigationContent = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div className="text-2xl">🖱️</div>
+            <Image src="/clickhub-icon.svg" alt="ClickHub" width={28} height={28} className="w-7 h-7" />
             <h1 className="text-xl font-bold text-white">ClickHub</h1>
             <span className="text-purple-400 text-sm">2025</span>
           </Link>
@@ -53,14 +53,7 @@ const NavigationContent = () => {
               👤 Profile
             </Link>
             
-            <a
-              href="https://github.com/MRIEnan/clickhub_hactoberfest2025/blob/main/CONTRIBUTING.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200 text-sm font-medium"
-            >
-              📝 Contribute
-            </a>
+            {/* Contribute link removed as requested */}
 
             {/* Desktop User Section */}
             {isLoggedIn ? (
@@ -146,15 +139,7 @@ const NavigationContent = () => {
                 👤 Profile
               </Link>
               
-              <a
-                href="https://github.com/MRIEnan/clickhub_hactoberfest2025/blob/main/CONTRIBUTING.md"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200 text-sm font-medium"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                📝 Contribute
-              </a>
+              {/* Contribute link removed as requested */}
 
               {/* Mobile User Section */}
               {isLoggedIn ? (
@@ -246,7 +231,7 @@ const Navigation = () => {
         <nav className="bg-gray-800 rounded-lg border border-gray-700 p-4 animate-pulse">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="text-2xl">🖱️</div>
+              <Image src="/clickhub-icon.svg" alt="ClickHub" width={24} height={24} className="w-6 h-6" />
               <div className="h-6 bg-gray-700 rounded w-32"></div>
             </div>
             <div className="hidden lg:flex items-center space-x-1">
