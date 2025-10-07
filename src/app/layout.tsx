@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/app/components/Navigation";
 import { UserProvider } from "./context/UserContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import ThemeToggle from "./components/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,9 +37,9 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: "ClickHub - Button Showcase",
-    description: "Discover amazing button designs for your next project. Join Hacktoberfest 2025!",
+    description: "Explore creative button designs and contribute to Hacktoberfest 2025!",
     images: ['/clickhub-icon.svg'],
   },
 };
@@ -48,18 +50,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200`}
       >
-        <UserProvider>
-          <div className="min-h-screen py-8">
+        <ThemeProvider>
+          <UserProvider>
             <Navigation />
-            <main>
-              {children}
-            </main>
-          </div>
-        </UserProvider>
+            {children}
+            <ThemeToggle />
+          </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
