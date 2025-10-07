@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ButtonContribution } from '@/utils/buttonLoader';
 import ButtonShowcase from './ButtonShowcase';
 
@@ -10,104 +10,163 @@ interface ExampleDrawerProps {
 
 export default function ExampleDrawer({ examples }: ExampleDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const openBtnRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  // Body scroll lock
+  useEffect(() => {
+    const prev = document.documentElement.style.overflowY;
+    if (isOpen) {
+      document.documentElement.style.overflowY = 'hidden';
+    } else {
+      document.documentElement.style.overflowY = prev || '';
+    }
+    return () => {
+      document.documentElement.style.overflowY = prev || '';
+    };
+  }, [isOpen]);
+
+  // Basic focus management: focus close button when opening, return to opener on close
+  useEffect(() => {
+    if (isOpen) {
+      closeBtnRef.current?.focus();
+    } else {
+      openBtnRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Click outside to close
+  const onOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!drawerRef.current) return;
+    if (e.target === e.currentTarget) setIsOpen(false);
+  };
 
   return (
     <>
-      {/* Drawer Toggle Button */}
-      <div className="fixed bottom-6 right-6 z-40">
+      {/* Toggle button */}
+      <div className="fixed bottom-6 right-6 z-[60]">
         <button
-          onClick={() => setIsOpen(!isOpen)}
-          className={`
-            relative px-4 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-lg shadow-lg
-            hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 font-medium text-sm
-            ${isOpen ? 'transform rotate-45' : 'animate-pulse hover:animate-none'}
+          ref={openBtnRef}
+          onClick={() => setIsOpen((v) => !v)}
+          className={`group relative rounded-xl px-4 py-3 text-sm font-medium text-white shadow-xl transition-all duration-300
+            bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600
+            ${isOpen ? 'rotate-0' : 'hover:-translate-y-0.5'}
           `}
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+          aria-controls="example-drawer"
         >
-          <div className="flex items-center gap-2">
-            <span className={`transform transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
-              {isOpen ? '✕' : '📚'}
-            </span>
+          <div className="relative z-10 flex items-center gap-2">
+            <span className="text-base">{isOpen ? '✕' : '📚'}</span>
             <span>{isOpen ? 'Close' : 'Examples'}</span>
           </div>
-          
-          {/* Pulse ring animation when closed */}
+
+          {/* Glow ring when closed */}
           {!isOpen && (
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 animate-ping opacity-20"></div>
+            <span className="pointer-events-none absolute inset-0 -z-0 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 opacity-20 blur-md" />
+          )}
+
+          {/* Soft pulse when closed */}
+          {!isOpen && (
+            <span className="pointer-events-none absolute inset-0 -z-10 rounded-xl ring-2 ring-amber-400/0 transition group-hover:ring-amber-400/30" />
           )}
         </button>
       </div>
 
-      {/* Drawer Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {/* Overlay */}
+      <div
+        role="presentation"
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
+          isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+        onClick={onOverlayClick}
+        aria-hidden={!isOpen}
+      />
 
-      {/* Drawer Content */}
-      <div className={`
-        fixed right-0 top-0 h-full w-full max-w-2xl bg-white shadow-2xl z-40 transform transition-transform duration-300
-        ${isOpen ? 'translate-x-0' : 'translate-x-full'}
-      `}>
-        <div className="h-full flex flex-col">
-          {/* Drawer Header */}
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
+      {/* Drawer */}
+      <aside
+        id="example-drawer"
+        ref={drawerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="example-drawer-title"
+        className={`fixed right-0 top-0 z-[55] h-full w-full max-w-2xl transform bg-white shadow-2xl transition-transform duration-300 ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex h-full flex-col">
+          {/* Header */}
+          <div className="border-b border-gray-200 bg-gradient-to-r from-amber-50 to-orange-50 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <h2 id="example-drawer-title" className="flex items-center gap-2 text-xl font-bold text-gray-900">
                   📚 Example Templates
                 </h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  Get started with these example button designs
+                <p className="mt-1 text-sm text-gray-600">
+                  Get started with these curated button designs
                 </p>
               </div>
               <button
+                ref={closeBtnRef}
                 onClick={() => setIsOpen(false)}
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                aria-label="Close examples drawer"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
           </div>
 
-          {/* Drawer Body */}
+          {/* Body */}
           <div className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
-              {examples.map((example, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              {examples.map((example, idx) => (
+                <div
+                  key={idx}
+                  className="rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                >
                   <ButtonShowcase contribution={example} />
                 </div>
               ))}
             </div>
-            
-            {/* Getting Started Tips */}
-            <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <h3 className="font-semibold text-blue-900 mb-2">🚀 Getting Started</h3>
-              <ul className="text-sm text-blue-800 space-y-1">
+
+            {/* Tips */}
+            <div className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <h3 className="mb-2 font-semibold text-blue-900">🚀 Getting Started</h3>
+              <ul className="space-y-1 text-sm text-blue-800">
                 <li>• Copy code from these examples</li>
-                <li>• Modify colors, animations, and styles</li>
-                <li>• Create your own unique button design</li>
-                <li>• Submit via GitHub for Hacktoberfest!</li>
+                <li>• Tweak colors, timing, and easing</li>
+                <li>• Add hover and press micro-interactions</li>
+                <li>• Submit via GitHub for Hacktoberfest</li>
               </ul>
             </div>
           </div>
 
-          {/* Drawer Footer */}
-          <div className="p-6 border-t border-gray-200 bg-gray-50">
+          {/* Footer */}
+          <div className="bg-gray-50 p-6">
             <a
               href="https://github.com/MRIEnan/clickhub_hactoberfest2025"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-colors flex items-center justify-center gap-2"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 font-medium text-white transition-colors hover:from-blue-700 hover:to-purple-700"
             >
-              � Start Contributing
+              🚀 Start Contributing
             </a>
           </div>
         </div>
-      </div>
+      </aside>
     </>
   );
 }

@@ -1,269 +1,222 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState, Suspense } from 'react';
-import { useUser } from '../context/UserContext';
+import { usePathname } from 'next/navigation';
+import { Suspense, useMemo, useState } from 'react';
 import Image from 'next/image';
+import { useUser } from '../context/UserContext';
+import { HomeIcon, UserCircleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
-const NavigationContent = () => {
+type NavItem = {
+  href: string;
+  label: string;
+  Icon: React.ElementType<React.ComponentProps<'svg'>>;
+};
+
+const NAV_ITEMS: readonly NavItem[] = [
+  { href: '/', label: 'Home', Icon: HomeIcon },
+  { href: '/search', label: 'Profile', Icon: UserCircleIcon },
+];
+
+function NavigationContent() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isLoggedIn, logoutUser } = useUser();
+  const [open, setOpen] = useState(false);
 
-  const isActive = (path: string) => {
-    if (path === '/' && pathname === '/') return true;
-    if (path !== '/' && pathname.startsWith(path)) return true;
-    return false;
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const isActive = (path: string) =>
+    path === '/' ? pathname === '/' : pathname.startsWith(path);
+
+  const activeMap = useMemo(
+    () => Object.fromEntries(NAV_ITEMS.map((n) => [n.href, isActive(n.href)])),
+    [isActive]
+  ) as Record<string, boolean>;
 
   return (
-    <div className="max-w-6xl mx-auto mb-1 px-4 sm:px-6 lg:px-8">
-      <nav className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div className="text-2xl">🖱️</div>
-            <h1 className="text-xl font-bold text-white">ClickHub</h1>
-            <span className="text-purple-400 text-sm">2025</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
+    <header className="sticky top-0 z-50 w-full">
+      <nav className="bg-gray-900/80 backdrop-blur border-b border-gray-800">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="h-16 flex items-center justify-between">
+            {/* Brand */}
             <Link
               href="/"
-              className={`px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
-                isActive('/') 
-                  ? 'bg-purple-600 text-white' 
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700'
-              }`}
+              className="flex items-center gap-2 rounded-md focus-visible:ring-2 focus-visible:ring-purple-500/70 px-1"
             >
-              🏠 Home
+              <div className="h-6 w-6 rounded bg-gradient-to-br from-purple-500 to-indigo-500" />
+              <span className="text-white font-semibold tracking-tight">ClickHub</span>
+              <span className="text-xs text-purple-300">2025</span>
             </Link>
-            
-            <Link
-              href="/search"
-              className={`px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
-                isActive('/search') 
-                  ? 'bg-purple-600 text-white' 
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700'
-              }`}
-            >
-              👤 Profile
-            </Link>
-            
-            <a
-              href="https://github.com/MRIEnan/clickhub_hactoberfest2025/blob/main/CONTRIBUTING.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200 text-sm font-medium"
-            >
-              📝 Contribute
-            </a>
 
-            {/* Desktop User Section */}
-            {isLoggedIn ? (
-              <div className="flex items-center space-x-3 ml-6 pl-6 border-l border-gray-600">
-                <div className="flex items-center space-x-2">
+            {/* Desktop Nav */}
+            <div className="hidden lg:flex items-center gap-1">
+              {NAV_ITEMS.map(({ href, label, Icon }) => {
+                const active = activeMap[href];
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`group relative inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm transition ${
+                      active
+                        ? 'text-white'
+                        : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                    }`}
+                  >
+                    <Icon
+                      className={`h-5 w-5 ${
+                        active
+                          ? 'text-purple-400'
+                          : 'text-gray-400 group-hover:text-purple-300'
+                      }`}
+                    />
+                    <span>{label}</span>
+                    {active && (
+                      <span className="absolute inset-x-2 -bottom-1 h-0.5 rounded bg-purple-500" />
+                    )}
+                  </Link>
+                );
+              })}
+
+              {/* Right side */}
+              {isLoggedIn ? (
+                <div className="ml-4 pl-4 border-l border-gray-800 flex items-center gap-3">
+                  <Link
+                    href={`/profile?user=${user!.login}`}
+                    className="hidden xl:flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition"
+                  >
+                    <UserCircleIcon className="h-5 w-5 text-gray-400" />
+                    <span>My Profile</span>
+                  </Link>
+                  <button
+                    onClick={logoutUser}
+                    className="rounded-md bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-700 transition"
+                  >
+                    Logout
+                  </button>
                   <Image
                     src={user!.avatar_url}
                     alt={user!.login}
                     width={32}
                     height={32}
-                    className="w-8 h-8 rounded-full border-2 border-purple-500/30"
+                    className="h-8 w-8 rounded-full border border-purple-500/30"
                   />
-                  <div className="text-left">
-                    <p className="text-white text-sm font-medium truncate max-w-32">
-                      {user!.name || user!.login}
-                    </p>
-                    <p className="text-gray-400 text-xs">@{user!.login}</p>
-                  </div>
                 </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="ml-4 rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 transition"
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
+
+            {/* Mobile toggle */}
+            <button
+              onClick={() => setOpen((v) => !v)}
+              aria-controls="mobile-menu"
+              aria-expanded={open}
+              className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:text-white hover:bg-gray-800 focus-visible:ring-2 focus-visible:ring-purple-500/70"
+            >
+              {open ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* ✅ Mobile Menu (Fixed visibility + smooth open/close) */}
+        <div
+          id="mobile-menu"
+          className={`lg:hidden bg-gray-900 border-t border-gray-800 transition-all duration-300 ease-in-out ${
+            open ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          } overflow-hidden`}
+        >
+          <div className="px-4 sm:px-6 lg:px-8 py-3 space-y-2">
+            {NAV_ITEMS.map(({ href, label, Icon }) => {
+              const active = activeMap[href];
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm transition ${
+                    active
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
+
+            {/* External Link */}
+            <a
+              href="https://github.com/MRIEnan/clickhub_hactoberfest2025/blob/main/CONTRIBUTING.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-md px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition"
+              onClick={() => setOpen(false)}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5 fill-current text-gray-400"
+                aria-hidden="true"
+              >
+                <path d="M12 .5a11.5 11.5 0 00-3.63 22.41c.57.1.78-.25.78-.55v-2.07c-3.18.69-3.85-1.37-3.85-1.37-.52-1.31-1.27-1.66-1.27-1.66-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.74 2.68 1.24 3.33.95.1-.75.4-1.24.73-1.52-2.54-.29-5.22-1.27-5.22-5.64 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.47.11-3.06 0 0 .96-.31 3.15 1.17a10.9 10.9 0 015.74 0c2.19-1.48 3.15-1.17 3.15-1.17.62 1.59.23 2.77.11 3.06.73.8 1.18 1.82 1.18 3.07 0 4.38-2.69 5.35-5.24 5.64.41.36.77 1.07.77 2.16v3.2c0 .31.2.66.79.55A11.5 11.5 0 0012 .5z" />
+              </svg>
+              <span>Contribute</span>
+            </a>
+
+            {isLoggedIn ? (
+              <div className="pt-3 mt-3 border-t border-gray-800 space-y-2">
                 <Link
                   href={`/profile?user=${user!.login}`}
-                  className="px-3 py-1 text-xs bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-md bg-purple-600 px-3 py-3 text-center text-sm text-white hover:bg-purple-700 transition"
                 >
                   My Profile
                 </Link>
                 <button
-                  onClick={logoutUser}
-                  className="px-3 py-1 text-xs bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                  onClick={() => {
+                    logoutUser();
+                    setOpen(false);
+                  }}
+                  className="w-full rounded-md bg-red-600 px-3 py-3 text-sm text-white hover:bg-red-700 transition"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <Link
-                href="/login"
-                className="ml-6 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors duration-200 text-sm font-medium"
-              >
-                Sign In
-              </Link>
+              <div className="pt-3 mt-3 border-t border-gray-800">
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-md bg-purple-600 px-3 py-3 text-center text-sm font-medium text-white hover:bg-purple-700 transition"
+                >
+                  Sign In
+                </Link>
+              </div>
             )}
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
         </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden mt-4 pt-4 border-t border-gray-700">
-            <div className="flex flex-col space-y-2">
-              <Link
-                href="/"
-                className={`px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
-                  isActive('/') 
-                    ? 'bg-purple-600 text-white' 
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                🏠 Home
-              </Link>
-              
-              <Link
-                href="/search"
-                className={`px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
-                  isActive('/search') 
-                    ? 'bg-purple-600 text-white' 
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                👤 Profile
-              </Link>
-              
-              <a
-                href="https://github.com/MRIEnan/clickhub_hactoberfest2025/blob/main/CONTRIBUTING.md"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200 text-sm font-medium"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                📝 Contribute
-              </a>
-
-              {/* Mobile User Section */}
-              {isLoggedIn ? (
-                <div className="pt-4 mt-4 border-t border-gray-700">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <Image
-                      src={user!.avatar_url}
-                      alt={user!.login}
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full border-2 border-purple-500/30"
-                    />
-                    <div>
-                      <p className="text-white text-sm font-medium">{user!.name || user!.login}</p>
-                      <p className="text-gray-400 text-xs">@{user!.login}</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col space-y-2">
-                    <Link
-                      href={`/profile?user=${user!.login}`}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-sm text-center"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      My Profile
-                    </Link>
-                    <button
-                      onClick={() => {
-                        logoutUser();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="pt-4 mt-4 border-t border-gray-700">
-                  <Link
-                    href="/login"
-                    className="block px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors duration-200 text-sm font-medium text-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Profile Search Bar - Only show on profile page */}
-        {/* {pathname === '/profile' && (
-          <div className="mt-4 pt-4 border-t border-gray-700">
-            <div className="flex justify-center">
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const username = formData.get('username') as string;
-                if (username.trim()) {
-                  router.push(`/profile?user=${username.trim()}`);
-                }
-              }} className="flex bg-gray-700 rounded-lg overflow-hidden border border-gray-600 max-w-md w-full">
-                <input
-                  name="username"
-                  type="text"
-                  placeholder="Enter GitHub username"
-                  className="flex-1 p-3 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <button
-                  type="submit"
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 transition-colors duration-200 text-sm font-medium"
-                >
-                  Search
-                </button>
-              </form>
-            </div>
-          </div>
-        )} */}
       </nav>
-    </div>
+    </header>
   );
-};
+}
 
-const Navigation = () => {
+export default function Navigation() {
   return (
-    <Suspense fallback={
-      <div className="max-w-6xl mx-auto mb-8 px-4 sm:px-6 lg:px-8">
-        <nav className="bg-gray-800 rounded-lg border border-gray-700 p-4 animate-pulse">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="text-2xl">🖱️</div>
-              <div className="h-6 bg-gray-700 rounded w-32"></div>
-            </div>
-            <div className="hidden lg:flex items-center space-x-1">
-              <div className="h-10 bg-gray-700 rounded w-20"></div>
-              <div className="h-10 bg-gray-700 rounded w-20"></div>
-              <div className="h-10 bg-gray-700 rounded w-24"></div>
-            </div>
-            <div className="lg:hidden">
-              <div className="h-10 w-10 bg-gray-700 rounded"></div>
-            </div>
+    <Suspense
+      fallback={
+        <div className="w-full border-b border-gray-800 bg-gray-900">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center animate-pulse">
+            <div className="h-6 w-6 rounded bg-gray-700 mr-2" />
+            <div className="h-5 w-28 rounded bg-gray-700" />
           </div>
-        </nav>
-      </div>
-    }>
+        </div>
+      }
+    >
       <NavigationContent />
     </Suspense>
   );
-};
-
-export default Navigation;
+}
