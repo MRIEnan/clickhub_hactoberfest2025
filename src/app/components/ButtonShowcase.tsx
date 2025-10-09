@@ -159,30 +159,43 @@ export default function ButtonShowcase({ contribution }: ButtonShowcaseProps) {
     // Dynamically import React component if it exists
     if (contribution.metadata.type === 'react') {
       const loadComponent = async () => {
+        const tryImport = async (importPath: string) => {
+          // Try different file extensions
+          const extensions = ['', '.jsx', '.tsx'];
+          
+          for (const ext of extensions) {
+            try {
+              console.log(`[DEBUG] Attempting to load React component from: ${importPath}${ext}`);
+              const componentModule = await import(`${importPath}${ext}`);
+              
+              // Check if default export is valid, otherwise try named exports
+              let Component = componentModule.default;
+              
+              // If default export is not a function/component, try to find a named export
+              if (!Component || typeof Component !== 'function') {
+                // Look for common named export patterns
+                Component = componentModule.Button || 
+                           componentModule.ButtonComponent || 
+                           componentModule[Object.keys(componentModule)[0]]; // First export
+              }
+              
+              // Validate that we have a valid React component
+              if (Component && typeof Component === 'function') {
+                console.log(`[SUCCESS] Loaded React component from: ${importPath}${ext}`);
+                return Component;
+              }
+            } catch (error) {
+              console.log(`[DEBUG] Failed to import ${importPath}${ext}:`, error instanceof Error ? error.message : error);
+            }
+          }
+          
+          throw new Error(`No valid React component found at ${importPath}`);
+        };
+
         try {
           if (contribution.importPath) {
-            console.log(`[DEBUG] Attempting to load React component from: ../../../contributions/${contribution.importPath}/button`);
-            
-            // Try to import the React component using the pre-calculated import path
-            const componentModule = await import(`../../../contributions/${contribution.importPath}/button`);
-            
-            // Check if default export is valid, otherwise try named exports
-            let Component = componentModule.default;
-            
-            // If default export is not a function/component, try to find a named export
-            if (!Component || typeof Component !== 'function') {
-              // Look for common named export patterns
-              Component = componentModule.Button || 
-                         componentModule.ButtonComponent || 
-                         componentModule[Object.keys(componentModule)[0]]; // First export
-            }
-            
-            // Validate that we have a valid React component
-            if (Component && typeof Component === 'function') {
-              setReactComponent(() => Component);
-            } else {
-              throw new Error('No valid React component found in module');
-            }
+            const Component = await tryImport(`../../../contributions/${contribution.importPath}/button`);
+            setReactComponent(() => Component);
           } else {
             throw new Error('No import path available');
           }
@@ -192,22 +205,8 @@ export default function ButtonShowcase({ contribution }: ButtonShowcaseProps) {
           // Fallback: try the old structure path
           try {
             console.log(`Fallback: trying ../../../contributions/${contribution.metadata.author}/button`);
-            const componentModule = await import(`../../../contributions/${contribution.metadata.author}/button`);
-            
-            // Apply same validation logic for fallback
-            let Component = componentModule.default;
-            
-            if (!Component || typeof Component !== 'function') {
-              Component = componentModule.Button || 
-                         componentModule.ButtonComponent || 
-                         componentModule[Object.keys(componentModule)[0]];
-            }
-            
-            if (Component && typeof Component === 'function') {
-              setReactComponent(() => Component);
-            } else {
-              throw new Error('No valid React component found in fallback module');
-            }
+            const Component = await tryImport(`../../../contributions/${contribution.metadata.author}/button`);
+            setReactComponent(() => Component);
           } catch (fallbackError) {
             console.error(`Fallback import also failed for ${contribution.metadata.author}:`, fallbackError);
           }
