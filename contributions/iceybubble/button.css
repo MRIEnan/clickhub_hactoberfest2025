@@ -1,0 +1,48 @@
+.hf-neon {
+  padding: 20px 54px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 20px;
+  color: #fff;
+  background: linear-gradient(90deg, #0ff1ce 10%, #ff0099 45%, #ae34fc 80%);
+  box-shadow:
+    0 0 12px #0ff1ce,
+    0 0 24px #ff0099,
+    0 0 36px #ae34fc;
+  outline: none;
+  letter-spacing: 3px;
+  position: relative;
+  cursor: pointer;
+  text-shadow:
+    0 0 16px #fff,
+    0 0 24px #ff0099;
+  transition: transform 0.25s, box-shadow 0.25s;
+  animation: neon-glow 1.3s infinite alternate;
+}
+
+.hf-neon:hover,
+.hf-neon:focus {
+  transform: scale(1.1) rotate(-2deg);
+  box-shadow:
+    0 0 32px #ff0099,
+    0 0 48px #0ff1ce,
+    0 0 56px #ae34fc;
+  background: linear-gradient(90deg, #ae34fc 15%, #ff0099 65%, #0ff1ce 95%);
+  text-shadow:
+    0 0 32px #fff,
+    0 0 56px #ff0099;
+}
+
+@keyframes neon-glow {
+  0% {
+    box-shadow:
+      0 0 10px #0ff1ce,
+      0 0 22px #ae34fc;
+  }
+  100% {
+    box-shadow:
+      0 0 32px #ff0099,
+      0 0 44px #ae34fc;
+  }
+}
