@@ -392,3 +392,5 @@ For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 ---
 
 **Happy Hacking! 🎃 Let's make some amazing buttons together!**
+
+💡 Tip: You can preview your button locally by running npm run dev.
