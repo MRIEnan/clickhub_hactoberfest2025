@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Aurora Animation */
+@keyframes aurora {
+  0% { transform: translateX(-50%) rotate(0deg); }
+  50% { transform: translateX(50%) rotate(180deg); }
+  100% { transform: translateX(-50%) rotate(360deg); }
+}
+
+.animate-aurora {
+  animation: aurora 3s ease-in-out infinite;
+}
