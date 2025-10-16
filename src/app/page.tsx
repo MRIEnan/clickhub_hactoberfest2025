@@ -1,3 +1,5 @@
+import SmoothAuroraButton from '../SmoothAuroraButton';
+
 import ButtonGallery from './components/ButtonGallery';
 import { loadButtonContributions } from '@/utils/buttonLoader';
 
