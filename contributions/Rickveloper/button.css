@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap");
+
+.solar-btn {
+  --glow-color: #ffb300;
+  --text-color: #1a1a1a;
+  --bg-color: #000;
+  position: relative;
+  padding: 14px 28px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--glow-color);
+  background: linear-gradient(145deg, #0a0a0a, #151515);
+  border: 2px solid var(--glow-color);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: 0.25s ease;
+  box-shadow:
+    0 0 5px var(--glow-color),
+    0 0 15px rgba(255, 179, 0, 0.4),
+    inset 0 0 10px rgba(255, 179, 0, 0.2);
+}
+
+.solar-btn span {
+  position: relative;
+  z-index: 2;
+}
+
+.solar-btn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 200, 0, 0.3) 0%,
+    transparent 60%
+  );
+  transform: scale(0);
+  transition: transform 0.4s ease;
+  z-index: 1;
+}
+
+.solar-btn:hover {
+  color: var(--text-color);
+  background: var(--glow-color);
+  box-shadow:
+    0 0 20px var(--glow-color),
+    0 0 60px var(--glow-color),
+    0 0 80px rgba(255, 200, 0, 0.6);
+}
+
+.solar-btn:hover::before {
+  transform: scale(1);
+}
+
+.solar-btn:active {
+  transform: scale(0.96);
+}

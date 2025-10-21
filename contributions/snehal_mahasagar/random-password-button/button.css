@@ -1,0 +1,54 @@
+.password-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg, #1e1e2f, #282a36);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+#password {
+  width: 300px;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  text-align: center;
+  font-family: monospace;
+}
+
+.generate-btn, .copy-btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: rgba(186, 180, 13, 0.954);
+  transition: all 0.3s ease;
+}
+
+.generate-btn {
+  background: linear-gradient(135deg, #7f00ff, #e100ff);
+  box-shadow: 0 0 15px #e100ff;
+}
+
+.generate-btn:hover {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  box-shadow: 0 0 25px #00c6ff;
+  transform: translateY(-3px);
+}
+
+.copy-btn {
+  background: #00c851;
+  box-shadow: 0 0 15px #00c851;
+}
+
+.copy-btn:hover {
+  background: #007e33;
+  box-shadow: 0 0 25px #00c851;
+  transform: translateY(-3px);
+}

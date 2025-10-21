@@ -154,6 +154,7 @@ const SearchContent = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onKeyPress={handleKeyPress}
+              autoComplete="off"
             />
             <button
               onClick={handleFetchUser}

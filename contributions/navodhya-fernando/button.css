@@ -1,0 +1,180 @@
+/* * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+} */
+
+/* body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+/* 
+.demo-container {
+    text-align: center;
+    color: white;
+    max-width: 500px;
+    padding: 2rem;
+} */
+
+/* .demo-container h1 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+} */
+
+/* .demo-container p {
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    font-size: 1.1rem;
+} */
+
+.navii-pulse-button {
+    position: relative;
+    padding: 16px 40px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    overflow: hidden;
+    
+    background: linear-gradient(135deg, #FF6F91 0%, #FF9671 30%, #FFC75F 60%, #F38BA8 100%);
+    background-size: 300% 300%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    box-shadow: 
+        0 8px 25px rgba(255, 111, 145, 0.4),
+        0 0 0 0 rgba(255, 111, 145, 0.2);
+        
+    transform: translateY(0) scale(1);
+    filter: hue-rotate(calc(var(--click-count, 0) * 15deg));
+}
+
+.navii-pulse-button .button-text {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.navii-pulse-button .button-icon {
+    display: inline-block;
+    margin-left: 8px;
+    transition: transform 0.4s ease;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}
+
+.navii-pulse-button:hover {
+    background-position: right center;
+    transform: translateY(-3px) scale(1.05);
+    animation: pulse-glow 2s infinite alternate ease-in-out;
+    box-shadow: 
+        0 15px 35px rgba(255, 111, 145, 0.6),
+        0 0 0 8px rgba(255, 111, 145, 0.1);
+}
+
+.navii-pulse-button:hover .button-text {
+    transform: scale(1.1);
+}
+
+.navii-pulse-button:hover .button-icon {
+    transform: rotate(360deg) scale(1.2);
+}
+
+.navii-pulse-button:active {
+    transform: translateY(-1px) scale(1.02);
+    transition: transform 0.1s ease;
+    box-shadow: 0 5px 15px rgba(255, 111, 145, 0.8);
+}
+
+.ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: ripple-effect 0.6s ease-out;
+    pointer-events: none;
+}
+
+.click-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #fff 0%, #FFC75F 50%, transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particle-burst 1s ease-out forwards;
+    transform: translate(-50%, -50%);
+}
+
+.stats {
+    margin-top: 2rem;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 
+            0 8px 25px rgba(255, 111, 145, 0.6),
+            0 0 0 0 rgba(255, 111, 145, 0.4);
+    }
+    50% {
+        box-shadow: 
+            0 12px 35px rgba(255, 150, 113, 0.8),
+            0 0 0 12px rgba(255, 111, 145, 0.1);
+    }
+    100% {
+        box-shadow: 
+            0 16px 45px rgba(255, 199, 95, 0.9),
+            0 0 0 20px rgba(255, 199, 95, 0.05);
+    }
+}
+
+@keyframes ripple-effect {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+    }
+}
+
+@keyframes particle-burst {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(var(--angle));
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0.3) rotate(var(--angle)) translateY(-40px);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .demo-container {
+        padding: 1rem;
+    }
+    
+    .demo-container h1 {
+        font-size: 2rem;
+    }
+    
+    .navii-pulse-button {
+        padding: 14px 32px;
+        font-size: 16px;
+    }
+}
