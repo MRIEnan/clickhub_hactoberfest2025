@@ -1,0 +1,87 @@
+/* Center the button without taking full screen */
+.glass-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: transparent; /* remove dark background */
+}
+
+/* The liquid glass-style button */
+.liquid-btn {
+  position: relative;
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2rem;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.4),
+    inset 0 1px rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Gradient glow overlay using pseudo-element */
+.liquid-btn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, #00e5ff, #ff00d4, #00e5ff);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  filter: blur(40px);
+  z-index: 0;
+  animation: rotate-gradient 6s linear infinite;
+}
+
+.liquid-btn:hover::before {
+  opacity: 0.6;
+}
+
+.liquid-btn:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.5),
+    inset 0 1px rgba(255, 255, 255, 0.4);
+}
+
+/* Keep text above gradient */
+.liquid-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ripple effect */
+.liquid-btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: ripple-animation 0.6s linear;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes rotate-gradient {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
