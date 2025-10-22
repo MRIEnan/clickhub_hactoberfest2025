@@ -1,136 +1,150 @@
 #!/usr/bin/env node
 
 /**
- * Validation script for button contributions
- * Checks that all contributions follow the required structure
+ * 🔍 Validation Script for Button Contributions
+ * --------------------------------------------
+ * Ensures each contributor's folder follows the required structure:
+ * - Must contain index.js exporting button metadata
+ * - Must contain a button implementation (React or HTML)
+ * - Optional: button.css, button.js, README.md
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const contributionsDir = path.join(__dirname, '../contributions');
-const requiredFiles = ['index.js'];
-const optionalFiles = ['button.jsx', 'button.tsx', 'button.html', 'button.css', 'button.js', 'README.md'];
+// === CONFIGURATION ===
+const CONTRIBUTIONS_DIR = path.join(__dirname, '../contributions');
+const REQUIRED_FILES = ['index.js'];
+const OPTIONAL_FILES = ['button.jsx', 'button.tsx', 'button.html', 'button.css', 'button.js', 'README.md'];
+const MAX_FILE_SIZE = 50 * 1024; // 50KB limit
 
+// === COLORS FOR TERMINAL OUTPUT ===
+const color = {
+  red: (t) => `\x1b[31m${t}\x1b[0m`,
+  yellow: (t) => `\x1b[33m${t}\x1b[0m`,
+  green: (t) => `\x1b[32m${t}\x1b[0m`,
+  cyan: (t) => `\x1b[36m${t}\x1b[0m`,
+};
+
+/**
+ * Validate a single contributor directory
+ */
 function validateContribution(contributorDir) {
-  const contributorPath = path.join(contributionsDir, contributorDir);
+  const contributorPath = path.join(CONTRIBUTIONS_DIR, contributorDir);
   const errors = [];
   const warnings = [];
 
-  // Check if it's a directory
-  if (!fs.lstatSync(contributorPath).isDirectory()) {
-    return { errors: [`${contributorDir} is not a directory`], warnings: [] };
-  }
+  const isDir = fs.lstatSync(contributorPath).isDirectory();
+  if (!isDir) return { errors: [`${contributorDir} is not a directory`], warnings };
 
-  // Check for required files
-  requiredFiles.forEach(file => {
+  // --- Check required files ---
+  for (const file of REQUIRED_FILES) {
     const filePath = path.join(contributorPath, file);
     if (!fs.existsSync(filePath)) {
       errors.push(`Missing required file: ${file}`);
-    } else {
-      // Validate index.js structure
-      if (file === 'index.js') {
-        try {
-          const content = fs.readFileSync(filePath, 'utf8');
-          if (!content.includes('export default') && !content.includes('module.exports')) {
-            errors.push('index.js must export button metadata');
-          }
-          if (!content.includes('name') || !content.includes('author') || !content.includes('type')) {
-            warnings.push('index.js should include name, author, and type fields');
-          }
-        } catch (err) {
-          errors.push(`Error reading index.js: ${err.message}`);
+      continue;
+    }
+
+    if (file === 'index.js') {
+      try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        if (!/export\s+default|module\.exports/.test(content)) {
+          errors.push('index.js must export button metadata');
         }
+        if (!/name|author|type/.test(content)) {
+          warnings.push('index.js should include "name", "author", and "type" fields');
+        }
+      } catch (err) {
+        errors.push(`Error reading index.js: ${err.message}`);
       }
     }
-  });
+  }
 
-  // Check for at least one implementation file
-  const hasReactComponent = fs.existsSync(path.join(contributorPath, 'button.jsx')) || 
-                            fs.existsSync(path.join(contributorPath, 'button.tsx'));
-  const hasHtmlComponent = fs.existsSync(path.join(contributorPath, 'button.html'));
-  
-  if (!hasReactComponent && !hasHtmlComponent) {
+  // --- Check implementation presence ---
+  const files = new Set(fs.readdirSync(contributorPath));
+  const hasReact = files.has('button.jsx') || files.has('button.tsx');
+  const hasHtml = files.has('button.html');
+
+  if (!hasReact && !hasHtml) {
     errors.push('Missing button implementation (button.jsx, button.tsx, or button.html)');
   }
 
-  // If has HTML, check for CSS
-  if (hasHtmlComponent && !fs.existsSync(path.join(contributorPath, 'button.css'))) {
+  // --- HTML buttons should have CSS ---
+  if (hasHtml && !files.has('button.css')) {
     warnings.push('HTML button should include button.css for styling');
   }
 
-  // Check file sizes
-  const files = fs.readdirSync(contributorPath);
-  files.forEach(file => {
+  // --- Check file sizes ---
+  for (const file of files) {
     const filePath = path.join(contributorPath, file);
     const stats = fs.statSync(filePath);
-    if (stats.size > 50 * 1024) { // 50KB limit
-      warnings.push(`File ${file} is larger than 50KB (${Math.round(stats.size / 1024)}KB)`);
+    if (stats.size > MAX_FILE_SIZE) {
+      warnings.push(`File ${file} exceeds 50KB (${Math.round(stats.size / 1024)}KB)`);
     }
-  });
+  }
 
   return { errors, warnings };
 }
 
+/**
+ * Main validation runner
+ */
 function main() {
-  console.log('🔍 Validating button contributions...\n');
+  console.log(color.cyan('🔍 Validating button contributions...\n'));
 
-  if (!fs.existsSync(contributionsDir)) {
-    console.error('❌ Contributions directory not found');
+  if (!fs.existsSync(CONTRIBUTIONS_DIR)) {
+    console.error(color.red('❌ Contributions directory not found.'));
     process.exit(1);
   }
 
-  const contributors = fs.readdirSync(contributionsDir)
-    .filter(item => {
-      const itemPath = path.join(contributionsDir, item);
+  const contributors = fs
+    .readdirSync(CONTRIBUTIONS_DIR)
+    .filter((item) => {
+      const itemPath = path.join(CONTRIBUTIONS_DIR, item);
       return fs.lstatSync(itemPath).isDirectory() && !item.startsWith('.');
     });
 
   if (contributors.length === 0) {
-    console.log('📝 No contributions found yet. Ready for the first contribution!');
+    console.log(color.yellow('📝 No contributions found yet. Ready for the first one!'));
     return;
   }
 
   let totalErrors = 0;
   let totalWarnings = 0;
 
-  contributors.forEach(contributor => {
+  for (const contributor of contributors) {
     const { errors, warnings } = validateContribution(contributor);
-    
-    if (errors.length === 0 && warnings.length === 0) {
-      console.log(`✅ ${contributor} - All good!`);
-    } else {
-      console.log(`\n📁 ${contributor}:`);
-      
-      errors.forEach(error => {
-        console.log(`  ❌ ${error}`);
-        totalErrors++;
-      });
-      
-      warnings.forEach(warning => {
-        console.log(`  ⚠️  ${warning}`);
-        totalWarnings++;
-      });
-    }
-  });
 
-  console.log(`\n📊 Summary:`);
+    if (errors.length === 0 && warnings.length === 0) {
+      console.log(color.green(`✅ ${contributor} - All good!`));
+    } else {
+      console.log(`\n📁 ${color.cyan(contributor)}:`);
+      for (const err of errors) {
+        console.log(`  ❌ ${color.red(err)}`);
+        totalErrors++;
+      }
+      for (const warn of warnings) {
+        console.log(`  ⚠️  ${color.yellow(warn)}`);
+        totalWarnings++;
+      }
+    }
+  }
+
+  // --- Summary ---
+  console.log('\n📊 ' + color.cyan('Summary:'));
   console.log(`   Contributors: ${contributors.length}`);
-  console.log(`   Errors: ${totalErrors}`);
-  console.log(`   Warnings: ${totalWarnings}`);
+  console.log(`   Errors: ${color.red(totalErrors)}`);
+  console.log(`   Warnings: ${color.yellow(totalWarnings)}`);
 
   if (totalErrors > 0) {
-    console.log('\n❌ Validation failed. Please fix the errors above.');
+    console.log('\n❌ ' + color.red('Validation failed. Please fix the errors above.'));
     process.exit(1);
   } else if (totalWarnings > 0) {
-    console.log('\n⚠️  Validation passed with warnings. Consider addressing them.');
+    console.log('\n⚠️  ' + color.yellow('Validation passed with warnings. Consider addressing them.'));
   } else {
-    console.log('\n🎉 All contributions are valid!');
+    console.log('\n🎉 ' + color.green('All contributions are valid!'));
   }
 }
 
-if (require.main === module) {
-  main();
-}
-
+if (require.main === module) main();
 module.exports = { validateContribution };
