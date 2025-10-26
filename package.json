@@ -29,6 +29,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "framer-motion": "^12.23.24",
+    "fs": "^0.0.1-security",
     "lucide-react": "^0.544.0",
     "motion": "^12.23.24",
     "next": "15.5.4",
