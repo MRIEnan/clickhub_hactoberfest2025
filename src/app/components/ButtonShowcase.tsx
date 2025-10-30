@@ -3,6 +3,7 @@
 import { ButtonContribution } from '@/utils/buttonLoader';
 import { useState, useEffect, useRef } from 'react';
 import ButtonModal from './ButtonModal';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
 // Component to handle GitHub profile images with fallback
@@ -269,19 +270,20 @@ export default function ButtonShowcase({ contribution }: ButtonShowcaseProps) {
   };
 
   return (
-    <div className="relative group">
-      <div 
-        className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-8 border border-gray-700 hover:border-gray-600 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 cursor-pointer min-h-[439px]"
-      >
-        {/* Button Preview - not clickable */}
+    
+    <>
+      <div className="relative group">
         <div 
-          className="flex justify-center items-start  min-h-[120px] mb-4 bg-gray-800/50 rounded-lg backdrop-blur-sm"
-          onClick={(e) => e.stopPropagation()}
+          className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-8 border border-gray-700 hover:border-gray-600 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 cursor-pointer min-h-[439px]"
         >
-          {renderButton()}
-        </div>
-        
-        {/* GitHub Profile and Info */}
+          {/* Button Preview - not clickable */}
+          <div 
+            className="flex justify-center items-start  min-h-[120px] mb-4 bg-gray-800/50 rounded-lg backdrop-blur-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {renderButton()}
+          </div>
+          {/* GitHub Profile and Info */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             {/* GitHub Profile Image */}
@@ -345,25 +347,27 @@ export default function ButtonShowcase({ contribution }: ButtonShowcaseProps) {
             )}
           </div>
         )}
-        
-        {/* View Code Button - not clickable for card click */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleViewCode();
-          }}
-          className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
-        >
-          View Code
-        </button>
+          {/* View Code Button - not clickable for card click */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewCode();
+            }}
+            className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+          >
+            View Code
+          </button>
+        </div>
       </div>
-      
-      {/* Modal */}
-      <ButtonModal 
-        contribution={contribution}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
-    </div>
+      {/* Modal rendered via React portal to avoid hover/flicker issues */}
+      {isModalOpen && typeof window !== 'undefined' && createPortal(
+        <ButtonModal 
+          contribution={contribution}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />,
+        document.body
+      )}
+    </>
   );
 }

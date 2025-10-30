@@ -134,8 +134,8 @@ export default function ButtonModal({ contribution, isOpen, onClose }: ButtonMod
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[48vh] overflow-y-auto p-4 mx-6">
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 select-none pointer-events-auto" style={{overflow: 'hidden'}}>
+      <div className="bg-white rounded-lg w-[90vw] max-w-[1200px] h-[85vh] flex flex-col overflow-hidden p-0">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
@@ -220,8 +220,8 @@ export default function ButtonModal({ contribution, isOpen, onClose }: ButtonMod
           )}
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
+  {/* Content */}
+  <div className="flex-1 min-h-0 p-6 overflow-y-auto">
           {activeTab === 'preview' && (
             <div className="space-y-4">
               <div className="bg-gray-50 p-8 rounded-lg border border-gray-200 text-center">
