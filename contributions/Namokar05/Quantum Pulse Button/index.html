@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unique Interactive Button</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="button-wrap">
+    <button class="funky-btn" id="uniqueBtn" aria-label="Launch special action" type="button">
+      <span class="icon" aria-hidden="true">
+        <!-- Rocket Icon -->
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 19c1.5-1 2-2 3-3l7-7a2 2 0 0 0-3-3l-7 7c-1 1-2 1.5-3 3a9 9 0 0 0-1 2.5c.8 0 2 .5 3 .5z"></path>
+          <path d="M9 15l6 6"></path>
+        </svg>
+      </span>
+      <span class="btn-label">Launch</span>
+
+      <!-- Hidden check mark for success -->
+      <svg class="check" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="position:absolute; right:12px; top:50%; transform:translateY(-50%);">
+        <path d="M20 6L9 17l-5-5" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
