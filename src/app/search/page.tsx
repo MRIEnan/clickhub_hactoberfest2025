@@ -145,7 +145,7 @@ const SearchContent = () => {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="grid justify-center mb-2 w-full">
+        <div className="grid justify-center my-5 w-full">
           <div className="flex bg-gray-800 rounded-lg overflow-hidden border border-gray-700 max-w-md w-full">
             <input
               type="text"
