@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stardust Bloom Button</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <h1 class="visually-hidden">Demo — Stardust Bloom Button</h1>
+
+    <div class="center">
+      <button id="stardust-btn"
+              class="stardust-btn"
+              aria-pressed="false"
+              aria-label="Activate stardust bloom">
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M12 2l1.9 4.5L18.8 8l-4.1 2.3L12 14l-1.7-3.7L6.2 8l4.9-1.5L12 2z" />
+          </svg>
+        </span>
+        <span class="btn-text">Stardust Bloom</span>
+        <span class="btn-sub">Touch the glow</span>
+        <span class="ripple-layer" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <p class="hint">Tip: Move pointer around the button for a subtle 3D tilt. Press or tap for a glow + particle burst.</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
