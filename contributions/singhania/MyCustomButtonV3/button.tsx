@@ -1,11 +1,16 @@
 'use client';
 import React, { useState } from 'react';
 
-export default function MyCustomButtonV4({ children = '✨ ZEPHYRA ✨', onClick }) {
+type MyCustomButtonProps = {
+  children?: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+};
+
+export default function MyCustomButtonV4({ children = '✨ ZEPHYRA ✨', onClick }: MyCustomButtonProps) {
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
-  const handleClick = (e) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setPressed(true);
     setTimeout(() => setPressed(false), 150);
     if (onClick) onClick(e);
