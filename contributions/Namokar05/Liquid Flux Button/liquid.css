@@ -1,0 +1,76 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #0f1117;
+  font-family: system-ui;
+}
+
+.liquid-btn {
+  position: relative;
+  padding: 18px 55px;
+  font-size: 20px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.liquid-btn .text {
+  position: relative;
+  z-index: 3;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.liquid-btn:hover {
+  transform: translateY(-6px) scale(1.03);
+}
+
+/* Blobs */
+.blob {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 50%;
+  filter: blur(26px);
+  animation: float 6s infinite ease-in-out;
+  z-index: 0;
+}
+
+.blob:nth-child(2) { top: -40px; left: -20px; animation-duration: 5s; }
+.blob:nth-child(3) { bottom: -40px; left: 30px; animation-duration: 7s; }
+.blob:nth-child(4) { top: 10px; right: -40px; animation-duration: 6s; }
+.blob:nth-child(5) { bottom: -30px; right: 20px; animation-duration: 8s; }
+
+@keyframes float {
+  0% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(25px, -20px) scale(1.2); }
+  100% { transform: translate(0,0) scale(1); }
+}
+
+/* Ripple explosion */
+.ripple {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  animation: explode 0.6s ease-out forwards;
+}
+
+@keyframes explode {
+  to {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
+}
