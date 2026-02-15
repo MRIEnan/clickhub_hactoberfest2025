@@ -286,9 +286,9 @@ export default function ButtonGallery({ contributions }: ButtonGalleryProps) {
       </div>
 
       {/* CTA */}
-      <div
+      <footer
         id="contribute"
-        className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-center text-white"
+        className="relative overflow-hidden  w-full bg-gray-800 py-10 text-center text-white"
       >
         <div className="absolute inset-0 opacity-20 [background:radial-gradient(600px_200px_at_10%_-20%,white,transparent_60%)]" />
         <h2 className="relative z-10 mb-3 text-xl font-extrabold">
@@ -306,7 +306,7 @@ export default function ButtonGallery({ contributions }: ButtonGalleryProps) {
           Get Started
           <span className="ml-1 inline-block transition group-hover:translate-x-0.5">→</span>
         </a>
-      </div>
+      </footer>
 
       {/* Example Templates Drawer */}
       <ExampleDrawer examples={exampleContributions} />
